@@ -18,7 +18,7 @@ This repo's whole plugin is one file (`zsh-ssh-colors.plugin.zsh`) plus its shel
 
 - README.md, LICENSE — prose and licensing, no behavior.
 - spec/spec_helper.sh, .shellspec — shellspec framework wiring, not plugin logic.
-- Style/quoting/formatting nits anywhere — there's no linter or formatter configured in this repo, so don't burn comments on it. Behavior only.
+- Style/formatting nits anywhere — there's no linter or formatter configured in this repo, so don't burn comments on it. Behavior only. (Exception: in shell/zsh, quoting affects behavior — unquoting a variable enables word-splitting and globbing, and re-quoting changes $@/"$@" expansion. Keep quoting that changes behavior in scope; skip only cosmetic quote style like single- vs double-quote choice.)
 
 ## Comment style
 
