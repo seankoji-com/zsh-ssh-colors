@@ -171,4 +171,18 @@ EOF
       The output should include $'\033]111\007'
     End
   End
+  Describe 'SSH forwarding destinations'
+    Parameters
+      -J jump@bastion
+      -L '8080:localhost:80'
+      -R '9090:localhost:90'
+      -W 'internal:22'
+      -F '/tmp/config with spaces'
+    End
+    It "does not mistake the $1 value for the host being coloured"
+      When call ssh_colors_destination "$1" "$2" alice@production uptime
+      The output should equal 'production'
+    End
+  End
+
 End
