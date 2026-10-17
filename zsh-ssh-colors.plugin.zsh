@@ -60,7 +60,7 @@ ssh_colors_destination() {
     if (( skip )); then skip=0; continue; fi
     case "$arg" in
       # Options that take a separate value.
-      -[bcDEeFIiJLlmOopQRSWw]) skip=1 ;;
+      -[BbcDEeFIiJLlmOoPpQRSWw]) skip=1 ;;
       # A bare flag, or the glued -ovalue form.
       -*) ;;
       *) print -r -- "${arg##*@}"; return 0 ;;

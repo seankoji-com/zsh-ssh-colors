@@ -34,6 +34,18 @@ Describe 'zsh-ssh-colors.plugin.zsh'
       The output should equal 'nas'
     End
 
+    Describe 'separate interface, tag and control-socket values'
+      Parameters
+        -B example0
+        -P production
+        -S '/tmp/control socket'
+      End
+      It "skips the value of $1 before finding the host"
+        When call ssh_colors_destination "$1" "$2" alice@nas uptime
+        The output should equal 'nas'
+      End
+    End
+
     It 'handles the glued -ovalue form'
       When call ssh_colors_destination -oStrictHostKeyChecking=no nas
       The output should equal 'nas'
@@ -169,6 +181,38 @@ EOF
       When call run_it
       The status should equal 255
       The output should include $'\033]111\007'
+    End
+
+    Describe 'interface and tag options'
+      Parameters
+        -B example0
+        -P production
+      End
+
+      # Print each argument separately so spaces cannot hide changed boundaries.
+      run_with_args() {
+        cat > "$FAKEBIN/ssh" <<'EOF'
+#!/bin/sh
+printf '<%s>' "$@"
+exit "${FAKE_SSH_EXIT:-0}"
+EOF
+        ssh "$@" alice@nas 'two words'
+      }
+
+      It "colours the host after $1 and preserves every argument"
+        expected="$(printf '\033]11;#2d1b4d\007<%s><%s><alice@nas><two words>\033]111\007' "$1" "$2")"
+        When call run_with_args "$1" "$2"
+        The status should be success
+        The output should equal "$expected"
+      End
+
+      It "resets after a failed fake SSH session with $1"
+        run_failed() { FAKE_SSH_EXIT=255 run_with_args "$@"; }
+        expected="$(printf '\033]11;#2d1b4d\007<%s><%s><alice@nas><two words>\033]111\007' "$1" "$2")"
+        When call run_failed "$1" "$2"
+        The status should equal 255
+        The output should equal "$expected"
+      End
     End
   End
   Describe 'SSH forwarding destinations'
